@@ -238,20 +238,14 @@ const canRotate = (shapeCopy: Type[]): boolean => {
     for(let y = 0; y < gameHeight; ++y) {
         for(let x = 0; x < gameWidth; ++x) {
             if (x >= currentShapeXOffset && x < (currentShapeXOffset + currentShapeRow) && y >= currentShapePos && y < (currentShapePos + currentShapeRow)) {
-                console.log(x, currentShapeXOffset, yy, currentShapeRow, (x - currentShapeXOffset) + yy);
                 if (shapeCopy[(x - currentShapeXOffset) + yy] === Type.BLOCK && boardCopy[y][x] === Type.BLOCK) return false;
                 check--;
                 checkForShape = true;
-                if (shapeCopy[(x - currentShapeXOffset) + yy] == Type.BLOCK)
-                boardCopy[y][x] = shapeCopy[(x - currentShapeXOffset) + yy];
             }
         }
         if (checkForShape)
             yy += currentShapeRow;
     }
-
-    console.clear();
-    console.log(JSON.stringify(boardCopy));
 
     if (check) return false;
 
