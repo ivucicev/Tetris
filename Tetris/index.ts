@@ -239,10 +239,11 @@ const canRotate = (shapeCopy: Type[]): boolean => {
         for(let x = 0; x < gameWidth; ++x) {
             if (x >= currentShapeXOffset && x < (currentShapeXOffset + currentShapeRow) && y >= currentShapePos && y < (currentShapePos + currentShapeRow)) {
                 console.log(x, currentShapeXOffset, yy, currentShapeRow, (x - currentShapeXOffset) + yy);
-                if (currentShape[(x - currentShapeXOffset) + yy] === Type.BLOCK && boardCopy[y][x] === Type.BLOCK) return false;
+                if (shapeCopy[(x - currentShapeXOffset) + yy] === Type.BLOCK && boardCopy[y][x] === Type.BLOCK) return false;
                 check--;
                 checkForShape = true;
-                boardCopy[y][x] = currentShape[(x - currentShapeXOffset) + yy];
+                if (shapeCopy[(x - currentShapeXOffset) + yy] == Type.BLOCK)
+                boardCopy[y][x] = shapeCopy[(x - currentShapeXOffset) + yy];
             }
         }
         if (checkForShape)
@@ -254,7 +255,7 @@ const canRotate = (shapeCopy: Type[]): boolean => {
 
     if (check) return false;
 
-    return false;
+    return true;
 
 }
 
@@ -281,8 +282,10 @@ const rotateCurrentShape = (): void => {
 
     // check if shape copy overlaps somewhere on grid with some other element
   
-    if (!canRotate(shapeCopy)) return;
-    
+    if (!canRotate(shapeCopy)) {
+        console.log("CANT ROATATE")
+        return;
+    }
     currentShape = shapeCopy;
 
 }

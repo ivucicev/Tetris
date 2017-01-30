@@ -210,11 +210,12 @@ var canRotate = function (shapeCopy) {
         for (var x = 0; x < gameWidth; ++x) {
             if (x >= currentShapeXOffset && x < (currentShapeXOffset + currentShapeRow) && y >= currentShapePos && y < (currentShapePos + currentShapeRow)) {
                 console.log(x, currentShapeXOffset, yy, currentShapeRow, (x - currentShapeXOffset) + yy);
-                if (currentShape[(x - currentShapeXOffset) + yy] === Type.BLOCK && boardCopy[y][x] === Type.BLOCK)
+                if (shapeCopy[(x - currentShapeXOffset) + yy] === Type.BLOCK && boardCopy[y][x] === Type.BLOCK)
                     return false;
                 check--;
                 checkForShape = true;
-                boardCopy[y][x] = currentShape[(x - currentShapeXOffset) + yy];
+                if (shapeCopy[(x - currentShapeXOffset) + yy] == Type.BLOCK)
+                    boardCopy[y][x] = shapeCopy[(x - currentShapeXOffset) + yy];
             }
         }
         if (checkForShape)
@@ -224,7 +225,7 @@ var canRotate = function (shapeCopy) {
     console.log(JSON.stringify(boardCopy));
     if (check)
         return false;
-    return false;
+    return true;
 };
 var moveLeft = function () { return canMoveLeft() ? currentShapeXOffset-- : noop(); };
 var moveRight = function () { return canMoveRight() ? currentShapeXOffset++ : noop(); };
@@ -241,8 +242,10 @@ var rotateCurrentShape = function () {
         shapeCopy[newPosition] = currentShape[i];
     }
     // check if shape copy overlaps somewhere on grid with some other element
-    if (!canRotate(shapeCopy))
+    if (!canRotate(shapeCopy)) {
+        console.log("CANT ROATATE");
         return;
+    }
     currentShape = shapeCopy;
 };
 var generateRandomShape = function () {
