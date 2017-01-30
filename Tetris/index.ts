@@ -276,10 +276,8 @@ const rotateCurrentShape = (): void => {
 
     // check if shape copy overlaps somewhere on grid with some other element
   
-    if (!canRotate(shapeCopy)) {
-        console.log("CANT ROATATE")
-        return;
-    }
+    if (!canRotate(shapeCopy)) return;
+
     currentShape = shapeCopy;
 
 }
@@ -339,7 +337,6 @@ const initBoard = (): void => {
             fillEmpty(x, y);
         }
     }
-    board[5][6] = Type.BLOCK;
     generateRandomShape();
     requestAnimationFrame(render);
 }
