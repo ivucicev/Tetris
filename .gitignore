@@ -1,0 +1,4 @@
+*.js
+/.vscode
+*.json
+*.map
