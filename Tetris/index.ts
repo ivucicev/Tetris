@@ -219,6 +219,8 @@ const canMoveRight = (): boolean => {
 }
 
 const canMoveDown = (): boolean => {
+    
+
     return true;
 }
 
@@ -273,8 +275,6 @@ const rotateCurrentShape = (): void => {
         let newPosition = newY * rowLength + newX;
         shapeCopy[newPosition] = currentShape[i];
     }
-
-    // check if shape copy overlaps somewhere on grid with some other element
   
     if (!canRotate(shapeCopy)) return;
 
