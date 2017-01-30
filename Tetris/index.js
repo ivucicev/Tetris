@@ -104,22 +104,22 @@ var shapeColors = [
  * @param  {} x
  * @param  {} y
  */
-function drawBlock(x, y) {
+var drawBlock = function (x, y) {
     ctx.fillStyle = currentShapeColor;
     draw(x, y);
-}
-function fillEmpty(x, y) {
+};
+var fillEmpty = function (x, y) {
     ctx.fillStyle = shapeColors[0];
     draw(x, y);
-}
-function drawDebug(x, y) {
+};
+var drawDebug = function (x, y) {
     ctx.fillStyle = "white";
     draw(x, y);
-}
-function draw(x, y) {
+};
+var draw = function (x, y) {
     ctx.fillRect(blockSize * x, blockSize * y, blockSize - 1, blockSize - 1);
     ctx.strokeRect(blockSize * x, blockSize * y, blockSize - 1, blockSize - 1);
-}
+};
 /**
  * Function clears canvas
  */
@@ -127,7 +127,7 @@ var clear = function () { return ctx.clearRect(0, 0, width, height); };
 /**
  * Render scene (game loop)
  */
-function render() {
+var render = function () {
     clear();
     // draw grid with freezed elements
     for (var x = 0; x < gameWidth; ++x) {
@@ -157,7 +157,7 @@ function render() {
         requestAnimationFrame(render);
         clearTimeout(timeout);
     }, gameSpeed);
-}
+};
 var canMoveLeft = function () {
     // take first column y = 0
     var hasBlock = false;
@@ -190,6 +190,9 @@ var canMoveRight = function () {
     }
     if (currentShapeXOffset + (currentShapeRow - (currentShape.length - check)) >= gameWidth)
         return false;
+    return true;
+};
+var canMoveDown = function () {
     return true;
 };
 /**
@@ -225,7 +228,7 @@ var canRotate = function (shapeCopy) {
 };
 var moveLeft = function () { return canMoveLeft() ? currentShapeXOffset-- : noop(); };
 var moveRight = function () { return canMoveRight() ? currentShapeXOffset++ : noop(); };
-var moveDown = function () { return currentShapePos++; };
+var moveDown = function () { return canMoveDown() ? currentShapePos++ : noop(); };
 var rotateCurrentShape = function () {
     var shapeCopy = [];
     var rowLength = currentShapeRow;

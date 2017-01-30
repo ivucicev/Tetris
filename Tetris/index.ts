@@ -112,22 +112,22 @@ const shapeColors: string[] = [
  * @param  {} x
  * @param  {} y
  */
-function drawBlock(x, y) {
+const drawBlock = (x, y) => {
     ctx.fillStyle = currentShapeColor;    
     draw(x, y);
 }
 
-function fillEmpty(x, y) {
+const fillEmpty = (x, y) => {
     ctx.fillStyle = shapeColors[0];
     draw(x, y);
 }
 
-function drawDebug(x, y) {
+const drawDebug = (x, y) => {
     ctx.fillStyle = "white";
     draw(x, y);  
 }
 
-function draw(x, y) {
+const draw = (x, y) => {
     ctx.fillRect(blockSize * x, blockSize * y, blockSize - 1, blockSize - 1);
     ctx.strokeRect(blockSize * x, blockSize * y, blockSize - 1, blockSize - 1);  
 }
@@ -135,12 +135,12 @@ function draw(x, y) {
 /**
  * Function clears canvas
  */
-const clear = () => ctx.clearRect(0, 0, width, height);
+const clear = (): void => ctx.clearRect(0, 0, width, height);
 
 /**
  * Render scene (game loop)
  */
-function render() {
+const render = (): void => {
     
     clear();
 
@@ -218,6 +218,10 @@ const canMoveRight = (): boolean => {
 
 }
 
+const canMoveDown = (): boolean => {
+    return true;
+}
+
 /**
  * Function checks if current shape can rotate on grid 
  * without overlaping with other elements
@@ -258,9 +262,9 @@ const moveLeft = () => canMoveLeft() ? currentShapeXOffset-- : noop();
 
 const moveRight = () => canMoveRight() ? currentShapeXOffset++ : noop();
 
-const moveDown = () => currentShapePos++;
+const moveDown = () => canMoveDown() ? currentShapePos++ : noop();
 
-const rotateCurrentShape = () => {
+const rotateCurrentShape = (): void => {
 
     let shapeCopy: Type[] = [];
     let rowLength = currentShapeRow;  
@@ -283,7 +287,7 @@ const rotateCurrentShape = () => {
 
 }
 
-const generateRandomShape = () => {
+const generateRandomShape = (): void => {
     var shape = Math.floor(Math.random() * (shapes.length - 1) + 1);
     currentShape = shapes[shape];
     currentShapeColor = shapeColors[shape];
@@ -302,11 +306,11 @@ const generateRandomShape = () => {
     currentShapePos = 0;
 }
 
-const noop = () => {};
+const noop = (): void => {};
 
 const bindEventListener = () => document.onkeyup = handleEvent;
 
-const handleEvent = (e) => {
+const handleEvent = (e): void => {
     switch(e.keyCode) {
         case Key.SPACE:
             generateRandomShape();
@@ -328,7 +332,7 @@ const handleEvent = (e) => {
     }
 }
 
-const initBoard = () => {
+const initBoard = (): void => {
     bindEventListener();
     // create board matrix representing tetris fields
     for(let y = 0; y < gameHeight; ++y) {
