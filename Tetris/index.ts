@@ -20,17 +20,11 @@ let currentShapeColor: string = '';
 let currentShapeXOffset = 3;
 let currentShapeRow = 0;
 
-/**
- * Block types
- */
 enum Type {
     EMPTY,
     BLOCK
 }
 
-/**
- * Keyboard mapping
- */
 enum Key {
     LEFT = 37,
     RIGHT = 39,
@@ -46,9 +40,6 @@ enum Size {
     SMALL = 4
 }
 
-/**
- * Define standard tetris shapes as array of bits
- */
 const shapes: Array<Type[]> = [
     [
         0, 0, 0, 0,
@@ -63,39 +54,43 @@ const shapes: Array<Type[]> = [
         0, 1 ,0 ,0,
     ],
     [
-        1, 1, 0,
-        1, 0, 0,
-        1, 0, 0,
+        0, 1, 1, 0,
+        0, 1, 0, 0, 
+        0, 1, 0, 0, 
+        0, 0, 0, 0,
     ],
     [
-        0, 1, 1,
-        0, 0, 1,
-        0, 0, 1,
+        0, 1, 1, 0,
+        0, 0, 1, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 0
     ],
     [
-        0, 0, 1,
-        0, 1, 1, 
-        0, 1, 0, 
+        0, 0, 1, 0,
+        0, 1, 1, 0,
+        0, 1, 0, 0,
+        0, 0, 0, 0,
     ],
     [
-        1, 0, 0, 
-        1, 1, 0, 
-        0, 1, 0, 
+        0, 1, 0, 0, 
+        0, 1, 1, 0, 
+        0, 0, 1, 0, 
+        0, 0, 0, 0
     ],
     [
-        1, 0, 0,
-        1, 1, 0,
-        1, 0, 0, 
+        0, 1, 0, 0,
+        0, 1, 1, 0,
+        0, 1, 0, 0, 
+        0, 0, 0, 0
     ],
-    [
-        1, 1,
-        1, 1,
+    [ 
+        0, 0, 0, 0,
+        0, 1, 1, 0,
+        0, 1, 1, 0,
+        0, 0, 0, 0,
     ],
 ] 
 
-/** 
- * Define colors for tetris blocks
- */
 const shapeColors: string[] = [
     "black",
     "green",
@@ -107,11 +102,6 @@ const shapeColors: string[] = [
     "brown"
 ]
 
-/**
- * just draw block on canvas
- * @param  {} x
- * @param  {} y
- */
 const drawBlock = (x, y) => {
     ctx.fillStyle = currentShapeColor;    
     draw(x, y);
@@ -132,19 +122,12 @@ const draw = (x, y) => {
     ctx.strokeRect(blockSize * x, blockSize * y, blockSize - 1, blockSize - 1);  
 }
 
-/**
- * Function clears canvas
- */
 const clear = (): void => ctx.clearRect(0, 0, width, height);
 
-/**
- * Render scene (game loop)
- */
 const render = (): void => {
     
     clear();
 
-    // draw grid with freezed elements
     for(let x = 0; x < gameWidth; ++x) {
         for(let y = 0; y < gameHeight; ++y) {
             if (board[y][x] == Type.BLOCK) {
@@ -160,7 +143,7 @@ const render = (): void => {
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
             drawBlock(x % currentShapeRow + currentShapeXOffset, currentShapePos + y);
-        } //else drawDebug(x % currentShapeRow + currentShapeXOffset, currentShapePos + y);
+        } else drawDebug(x % currentShapeRow + currentShapeXOffset, currentShapePos + y);
         if ((x % currentShapeRow) == (currentShapeRow - 1)) {
             y++;
         }
@@ -178,7 +161,6 @@ const render = (): void => {
 
 const canMoveLeft = (): boolean => {
 
-    // take first column y = 0
     let hasBlock = false;
     let check = 0;
 
@@ -199,7 +181,6 @@ const canMoveLeft = (): boolean => {
 
 const canMoveRight = (): boolean => {
 
-    // take first column y = 0
     let hasBlock = false;
     let check = currentShape.length;
 
@@ -224,12 +205,6 @@ const canMoveDown = (): boolean => {
     return true;
 }
 
-/**
- * Function checks if current shape can rotate on grid 
- * without overlaping with other elements
- * @param  {Type[]} shapeCopy
- * @returns boolean
- */
 const canRotate = (shapeCopy: Type[]): boolean => {
 
     let boardCopy = JSON.parse(JSON.stringify(board));
@@ -256,9 +231,7 @@ const canRotate = (shapeCopy: Type[]): boolean => {
 }
 
 const moveLeft = () => canMoveLeft() ? currentShapeXOffset-- : noop();
-
 const moveRight = () => canMoveRight() ? currentShapeXOffset++ : noop();
-
 const moveDown = () => canMoveDown() ? currentShapePos++ : noop();
 
 const rotateCurrentShape = (): void => {
@@ -302,7 +275,6 @@ const generateRandomShape = (): void => {
 }
 
 const noop = (): void => {};
-
 const bindEventListener = () => document.onkeyup = handleEvent;
 
 const handleEvent = (e): void => {
