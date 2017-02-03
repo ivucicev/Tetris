@@ -11,7 +11,7 @@ const boardSizeX: number = width / gameWidth;
 const boardSizeY: number = height / gameHeight;
 
 let interval: any = null;
-let gameSpeed: number = 750;
+let gameSpeed: number = 250;
 
 let board: Type[][] = [];
 let currentShape: Type[] = [];
@@ -126,17 +126,21 @@ const clear = (): void => ctx.clearRect(0, 0, width, height);
 
 const render = (): void => {
     
+    console.clear();
     clear();
 
     for(let x = 0; x < gameWidth; ++x) {
         for(let y = 0; y < gameHeight; ++y) {
             if (board[y][x] == Type.BLOCK) {
-                drawBlock(y, x);
+                console.log(x, y)
+                drawBlock(x, y);
             } else if (board[y][x] == Type.EMPTY) {
                 fillEmpty(x, y);
             }
         }
     }
+
+    console.log(JSON.stringify(board));
 
     let y = 0;
     // draw current shape
@@ -150,13 +154,31 @@ const render = (): void => {
         if (currentShapePos >= 20) generateRandomShape();
     }
 
-    //currentShapePos++;
+    if (canMoveDown()) {
+        currentShapePos++;
+    } else {
+        saveShapePositionToBoard();
+    }
 
     const timeout = setTimeout(() => { 
         requestAnimationFrame(render);
         clearTimeout(timeout);
     }, gameSpeed);
 
+}
+
+const saveShapePositionToBoard = (): void => {
+    let y = 0;
+    // draw current shape
+    for(let x = 0; x < currentShape.length; x++) {
+        if (currentShape[x] == Type.BLOCK) {
+            board[currentShapePos + y][x % currentShapeRow + currentShapeXOffset] = Type.BLOCK;
+        } 
+        if ((x % currentShapeRow) == (currentShapeRow - 1)) {
+            y++;
+        }
+    }
+    generateRandomShape();
 }
 
 const canMoveLeft = (): boolean => {
@@ -236,6 +258,22 @@ const canMoveRight = (): boolean => {
 
 const canMoveDown = (): boolean => {
     
+    // check if there is block next to any block of current shape to the moveRight
+
+    let y = 0;
+
+    for(let x = 0; x < currentShape.length; x++) {
+        if (currentShape[x] == Type.BLOCK) {
+            let nextX  = x % currentShapeRow + currentShapeXOffset;
+            let nextY = currentShapePos + y + 1;
+            if (nextY >= gameHeight || board[nextY][nextX] == Type.BLOCK) {
+                return false;
+            }
+        } 
+        if ((x % currentShapeRow) == (currentShapeRow - 1)) {
+            y++;
+        }
+    }
 
     return true;
 }
