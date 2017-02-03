@@ -143,7 +143,7 @@ const render = (): void => {
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
             drawBlock(x % currentShapeRow + currentShapeXOffset, currentShapePos + y);
-        } else drawDebug(x % currentShapeRow + currentShapeXOffset, currentShapePos + y);
+        } //else drawDebug(x % currentShapeRow + currentShapeXOffset, currentShapePos + y);
         if ((x % currentShapeRow) == (currentShapeRow - 1)) {
             y++;
         }
@@ -173,7 +173,24 @@ const canMoveLeft = (): boolean => {
         }
     }
 
+    // this means that block is outside game window
     if (!(currentShapeXOffset + check)) return false;
+
+    // check if there is block next to every block in current shape
+    let y = 0;
+
+    for(let x = 0; x < currentShape.length; x++) {
+        if (currentShape[x] == Type.BLOCK) {
+            let nextX  = x % currentShapeRow + currentShapeXOffset - 1;
+            let nextY = currentShapePos + y;
+            if (board[nextX][nextY] == Type.BLOCK) {
+                return false;
+            }
+        } 
+        if ((x % currentShapeRow) == (currentShapeRow - 1)) {
+            y++;
+        }
+    }
 
     return true;
 
@@ -193,7 +210,25 @@ const canMoveRight = (): boolean => {
         }
     }
 
+    // this means that block is outside game window
     if (currentShapeXOffset + (currentShapeRow - (currentShape.length - check)) >= gameWidth ) return false;
+
+    // check if there is block next to any block of current shape to the moveRight
+
+    let y = 0;
+
+    for(let x = 0; x < currentShape.length; x++) {
+        if (currentShape[x] == Type.BLOCK) {
+            let nextX  = x % currentShapeRow + currentShapeXOffset + 1;
+            let nextY = currentShapePos + y;
+            if (board[nextX][nextY] == Type.BLOCK) {
+                return false;
+            }
+        } 
+        if ((x % currentShapeRow) == (currentShapeRow - 1)) {
+            y++;
+        }
+    }
 
     return true;
 
@@ -274,7 +309,7 @@ const generateRandomShape = (): void => {
     currentShapePos = 0;
 }
 
-const noop = (): void => {};
+const noop = (): void => undefined;
 const bindEventListener = () => document.onkeyup = handleEvent;
 
 const handleEvent = (e): void => {
@@ -309,6 +344,7 @@ const initBoard = (): void => {
             fillEmpty(x, y);
         }
     }
+    board[6][6] = Type.BLOCK;
     generateRandomShape();
     requestAnimationFrame(render);
 }
