@@ -126,21 +126,17 @@ const clear = (): void => ctx.clearRect(0, 0, width, height);
 
 const render = (): void => {
     
-    console.clear();
     clear();
 
     for(let x = 0; x < gameWidth; ++x) {
         for(let y = 0; y < gameHeight; ++y) {
             if (board[y][x] == Type.BLOCK) {
-                console.log(x, y)
                 drawBlock(x, y);
             } else if (board[y][x] == Type.EMPTY) {
                 fillEmpty(x, y);
             }
         }
     }
-
-    console.log(JSON.stringify(board));
 
     let y = 0;
     // draw current shape
@@ -154,17 +150,19 @@ const render = (): void => {
         if (currentShapePos >= 20) generateRandomShape();
     }
 
+}
+
+const frame = () => {
+    render();
     if (canMoveDown()) {
         currentShapePos++;
     } else {
         saveShapePositionToBoard();
     }
-
     const timeout = setTimeout(() => { 
-        requestAnimationFrame(render);
+        requestAnimationFrame(frame);
         clearTimeout(timeout);
     }, gameSpeed);
-
 }
 
 const saveShapePositionToBoard = (): void => {
@@ -178,7 +176,29 @@ const saveShapePositionToBoard = (): void => {
             y++;
         }
     }
+    collapseRows();
     generateRandomShape();
+}
+
+const collapseRows = (): void => {
+    let completeRows = gameHeight;
+    let rowCompleted = true;
+    rows:
+    for(let y = 0; y < gameHeight; ++y) {
+        rowCompleted = true;
+        for(let x = 0; x < gameWidth; ++x) {
+            if (board[y][x] == Type.EMPTY) {
+                completeRows--;
+                rowCompleted = false;
+                continue rows;
+            }
+        }
+        if (rowCompleted) {
+            for (let yy = y; yy > 0; yy--) {
+                board[yy] = board[yy - 1];
+            }
+        }
+    }
 }
 
 const canMoveLeft = (): boolean => {
@@ -205,7 +225,7 @@ const canMoveLeft = (): boolean => {
         if (currentShape[x] == Type.BLOCK) {
             let nextX  = x % currentShapeRow + currentShapeXOffset - 1;
             let nextY = currentShapePos + y;
-            if (board[nextX][nextY] == Type.BLOCK) {
+            if (board[nextY][nextX] == Type.BLOCK) {
                 return false;
             }
         } 
@@ -243,7 +263,7 @@ const canMoveRight = (): boolean => {
         if (currentShape[x] == Type.BLOCK) {
             let nextX  = x % currentShapeRow + currentShapeXOffset + 1;
             let nextY = currentShapePos + y;
-            if (board[nextX][nextY] == Type.BLOCK) {
+            if (board[nextY][nextX] == Type.BLOCK) {
                 return false;
             }
         } 
@@ -303,9 +323,26 @@ const canRotate = (shapeCopy: Type[]): boolean => {
 
 }
 
-const moveLeft = () => canMoveLeft() ? currentShapeXOffset-- : noop();
-const moveRight = () => canMoveRight() ? currentShapeXOffset++ : noop();
-const moveDown = () => canMoveDown() ? currentShapePos++ : noop();
+const moveLeft = () => {
+    if (canMoveLeft()) {
+        currentShapeXOffset--;
+        render();
+    } 
+}
+
+const moveRight = () => {
+    if (canMoveRight()) {
+        currentShapeXOffset++
+        render();
+    }
+}
+
+const moveDown = () => {
+    if (canMoveDown()) {
+        currentShapePos++;
+        render();
+    }
+}
 
 const rotateCurrentShape = (): void => {
 
@@ -325,6 +362,8 @@ const rotateCurrentShape = (): void => {
     if (!canRotate(shapeCopy)) return;
 
     currentShape = shapeCopy;
+
+    render();
 
 }
 
@@ -347,7 +386,6 @@ const generateRandomShape = (): void => {
     currentShapePos = 0;
 }
 
-const noop = (): void => undefined;
 const bindEventListener = () => document.onkeyup = handleEvent;
 
 const handleEvent = (e): void => {
@@ -382,9 +420,8 @@ const initBoard = (): void => {
             fillEmpty(x, y);
         }
     }
-    board[6][6] = Type.BLOCK;
     generateRandomShape();
-    requestAnimationFrame(render);
+    requestAnimationFrame(frame);
 }
 
 initBoard();
