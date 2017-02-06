@@ -9,16 +9,14 @@ const gameHeight: number = 20;
 const blockSize: number = height / 20;
 const boardSizeX: number = width / gameWidth;
 const boardSizeY: number = height / gameHeight;
+const shapeSize: number = 4;
 
-let interval: any = null;
 let gameSpeed: number = 250;
-
 let board: Type[][] = [];
 let currentShape: Type[] = [];
-let currentShapePos: number = 0;
+let currentShapeYPosition: number = 0;
+let currentShapeXPosition = 3;
 let currentShapeColor: string = '';
-let currentShapeXOffset = 3;
-let currentShapeRow = 0;
 
 enum Type {
     EMPTY,
@@ -105,10 +103,8 @@ const draw = (x, y) => {
 
 const clear = (): void => ctx.clearRect(0, 0, width, height);
 
-const render = (): void => {
-    
+const render = (): void => { 
     clear();
-
     for(let x = 0; x < gameWidth; ++x) {
         for(let y = 0; y < gameHeight; ++y) {
             if (board[y][x] == Type.BLOCK) {
@@ -118,25 +114,23 @@ const render = (): void => {
             }
         }
     }
-
+    
     let y = 0;
-    // draw current shape
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
-            drawBlock(x % currentShapeRow + currentShapeXOffset, currentShapePos + y);
+            drawBlock(x % shapeSize + currentShapeXPosition, currentShapeYPosition + y);
         }
-        if ((x % currentShapeRow) == (currentShapeRow - 1)) {
+        if ((x % shapeSize) == (shapeSize - 1)) {
             y++;
         }
-        if (currentShapePos >= 20) generateRandomShape();
+        if (currentShapeYPosition >= 20) generateRandomShape();
     }
-
 }
 
 const frame = () => {
     render();
     if (canMoveDown()) {
-        currentShapePos++;
+        currentShapeYPosition++;
     } else {
         saveShapePositionToBoard();
     }
@@ -150,9 +144,9 @@ const saveShapePositionToBoard = (): void => {
     let y = 0;
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
-            board[currentShapePos + y][x % currentShapeRow + currentShapeXOffset] = Type.BLOCK;
+            board[currentShapeYPosition + y][x % shapeSize + currentShapeXPosition] = Type.BLOCK;
         } 
-        if ((x % currentShapeRow) == (currentShapeRow - 1)) {
+        if ((x % shapeSize) == (shapeSize - 1)) {
             y++;
         }
     }
@@ -185,13 +179,13 @@ const canMoveLeft = (): boolean => {
     let y = 0;
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
-            let nextX  = x % currentShapeRow + currentShapeXOffset - 1;
-            let nextY = currentShapePos + y;
+            let nextX  = x % shapeSize + currentShapeXPosition - 1;
+            let nextY = currentShapeYPosition + y;
             if (nextX < 0 || board[nextY][nextX] == Type.BLOCK) {
                 return false;
             }
         } 
-        if ((x % currentShapeRow) == (currentShapeRow - 1)) {
+        if ((x % shapeSize) == (shapeSize - 1)) {
             y++;
         }
     }
@@ -202,13 +196,13 @@ const canMoveRight = (): boolean => {
     let y = 0;
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
-            let nextX  = x % currentShapeRow + currentShapeXOffset + 1;
-            let nextY = currentShapePos + y;
+            let nextX  = x % shapeSize + currentShapeXPosition + 1;
+            let nextY = currentShapeYPosition + y;
             if (nextX >= gameWidth || board[nextY][nextX] == Type.BLOCK) {
                 return false;
             }
         } 
-        if ((x % currentShapeRow) == (currentShapeRow - 1)) {
+        if ((x % shapeSize) == (shapeSize - 1)) {
             y++;
         }
     }
@@ -219,13 +213,13 @@ const canMoveDown = (): boolean => {
     let y = 0;
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
-            let nextX  = x % currentShapeRow + currentShapeXOffset;
-            let nextY = currentShapePos + y + 1;
+            let nextX  = x % shapeSize + currentShapeXPosition;
+            let nextY = currentShapeYPosition + y + 1;
             if (nextY >= gameHeight || board[nextY][nextX] == Type.BLOCK) {
                 return false;
             }
         } 
-        if ((x % currentShapeRow) == (currentShapeRow - 1)) {
+        if ((x % shapeSize) == (shapeSize - 1)) {
             y++;
         }
     }
@@ -233,56 +227,49 @@ const canMoveDown = (): boolean => {
 }
 
 const canRotate = (shapeCopy: Type[]): boolean => {
-
     let boardCopy = JSON.parse(JSON.stringify(board));
     let yy = 0;
     let check = currentShape.length;
     let checkForShape = false;
-
     for(let y = 0; y < gameHeight; ++y) {
         for(let x = 0; x < gameWidth; ++x) {
-            if (x >= currentShapeXOffset && x < (currentShapeXOffset + currentShapeRow) && y >= currentShapePos && y < (currentShapePos + currentShapeRow)) {
-                if (shapeCopy[(x - currentShapeXOffset) + yy] === Type.BLOCK && boardCopy[y][x] === Type.BLOCK) return false;
+            if (x >= currentShapeXPosition && x < (currentShapeXPosition + shapeSize) && y >= currentShapeYPosition && y < (currentShapeYPosition + shapeSize)) {
+                if (shapeCopy[(x - currentShapeXPosition) + yy] === Type.BLOCK && boardCopy[y][x] === Type.BLOCK) return false;
                 check--;
                 checkForShape = true;
             }
         }
         if (checkForShape)
-            yy += currentShapeRow;
+            yy += shapeSize;
     }
-
     if (check) return false;
-
     return true;
-
 }
 
 const moveLeft = () => {
     if (canMoveLeft()) {
-        currentShapeXOffset--;
+        currentShapeXPosition--;
         render();
     } 
 }
 
 const moveRight = () => {
     if (canMoveRight()) {
-        currentShapeXOffset++
+        currentShapeXPosition++
         render();
     }
 }
 
 const moveDown = () => {
     if (canMoveDown()) {
-        currentShapePos++;
+        currentShapeYPosition++;
         render();
     }
 }
 
 const rotateCurrentShape = (): void => {
-
     let shapeCopy: Type[] = [];
-    let rowLength = currentShapeRow;  
-
+    let rowLength = shapeSize;  
     for (let i = 0; i < currentShape.length; i++)
     {
         let x = i % rowLength;
@@ -292,22 +279,17 @@ const rotateCurrentShape = (): void => {
         let newPosition = newY * rowLength + newX;
         shapeCopy[newPosition] = currentShape[i];
     }
-  
     if (!canRotate(shapeCopy)) return;
-
     currentShape = shapeCopy;
-
     render();
-
 }
 
 const generateRandomShape = (): void => {
     var shape = Math.floor(Math.random() * (shapes.length - 1) + 1);
     currentShape = shapes[shape];
     currentShapeColor = shapeColors[shape];
-    currentShapeRow = 4;
-    currentShapeXOffset = 5 - Math.floor(currentShapeRow / 2);
-    currentShapePos = 0;
+    currentShapeXPosition = 5 - Math.floor(shapeSize / 2);
+    currentShapeYPosition = 0;
 }
 
 const bindEventListener = () => document.onkeyup = handleEvent;
