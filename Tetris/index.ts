@@ -11,12 +11,13 @@ const boardSizeX: number = width / gameWidth;
 const boardSizeY: number = height / gameHeight;
 const shapeSize: number = 4;
 
-let gameSpeed: number = 250;
+let gameSpeed: number = 750;
 let board: Type[][] = [];
 let currentShape: Type[] = [];
 let currentShapeYPosition: number = 0;
 let currentShapeXPosition: number = 3;
 let currentShapeColor: string = '';
+let score = 0;
 
 enum Type {
     EMPTY,
@@ -157,6 +158,7 @@ const saveShapePositionToBoard = (): void => {
 const collapseRows = (): void => {
     let completeRows = gameHeight;
     let rowCompleted = true;
+    let collapsedRows = 0;
     rows:
     for(let y = 0; y < gameHeight; ++y) {
         rowCompleted = true;
@@ -171,8 +173,19 @@ const collapseRows = (): void => {
             for (let yy = y; yy > 0; yy--) {
                 board[yy] = board[yy - 1];
             }
+            collapsedRows++;
         }
     }
+
+    score += collapsedRows*100;
+    updateScore();
+
+}
+
+const updateScore = (): void => {
+    const scoreEl = document.getElementById("score");
+    scoreEl.innerHTML = `${score}`;
+    // if (score % 3000) gameSpeed -= 75;   
 }
 
 const canMoveLeft = (): boolean => {
@@ -262,7 +275,7 @@ const moveRight = () => {
 
 const moveDown = () => {
     if (canMoveDown()) {
-        currentShapeYPosition++;
+        currentShapeYPosition++;  
         render();
     }
 }
@@ -325,9 +338,11 @@ const initBoard = (): void => {
             fillEmpty(x, y);
         }
     }
+    updateScore();
     generateRandomShape();
     requestAnimationFrame(frame);
 }
 
 initBoard();
+
 
