@@ -15,7 +15,7 @@ let gameSpeed: number = 250;
 let board: Type[][] = [];
 let currentShape: Type[] = [];
 let currentShapeYPosition: number = 0;
-let currentShapeXPosition = 3;
+let currentShapeXPosition: number = 3;
 let currentShapeColor: string = '';
 
 enum Type {
@@ -114,7 +114,7 @@ const render = (): void => {
             }
         }
     }
-    
+
     let y = 0;
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
@@ -270,8 +270,7 @@ const moveDown = () => {
 const rotateCurrentShape = (): void => {
     let shapeCopy: Type[] = [];
     let rowLength = shapeSize;  
-    for (let i = 0; i < currentShape.length; i++)
-    {
+    for (let i = 0; i < currentShape.length; i++) {
         let x = i % rowLength;
         let y = Math.floor(i / rowLength);
         let newX = rowLength - y - 1;
@@ -285,10 +284,10 @@ const rotateCurrentShape = (): void => {
 }
 
 const generateRandomShape = (): void => {
-    var shape = Math.floor(Math.random() * (shapes.length - 1) + 1);
-    currentShape = shapes[shape];
-    currentShapeColor = shapeColors[shape];
-    currentShapeXPosition = 5 - Math.floor(shapeSize / 2);
+    let randomShapeIndex = Math.floor(Math.random() * (shapes.length - 1) + 1);
+    currentShape = shapes[randomShapeIndex];
+    currentShapeColor = shapeColors[randomShapeIndex];
+    currentShapeXPosition = 3;
     currentShapeYPosition = 0;
 }
 
