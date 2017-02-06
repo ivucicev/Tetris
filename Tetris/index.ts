@@ -18,6 +18,8 @@ let currentShapeYPosition: number = 0;
 let currentShapeXPosition: number = 3;
 let currentShapeColor: string = '';
 let score = 0;
+let level = 0;
+let timer = null;
 
 enum Type {
     EMPTY,
@@ -136,9 +138,9 @@ const frame = () => {
     } else {
         saveShapePositionToBoard();
     }
-    const timeout = setTimeout(() => { 
+    timer = setTimeout(() => { 
         requestAnimationFrame(frame);
-        clearTimeout(timeout);
+        clearTimeout(timer);
     }, gameSpeed);
 }
 
@@ -179,17 +181,24 @@ const collapseRows = (): void => {
     }
 
     score += collapsedRows*100;
-    updateScore();
+    if (collapsedRows)
+        updateScore();
 
 }
 
 const updateScore = (): void => {
     const scoreEl = document.getElementById("score");
+    const levelEl = document.getElementById("level");
     scoreEl.innerHTML = `${score}`;
-    // if (score % 3000) gameSpeed -= 75;   
+    if (score % 3000 == 0) {
+        //gameSpeed -= 75;
+        level++;
+        levelEl.innerHTML = `${level}`;    
+    }   
 }
 
 const canMoveLeft = (): boolean => {
+    if (currentShapeYPosition < 0) return false;
     let y = 0;
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
@@ -207,6 +216,7 @@ const canMoveLeft = (): boolean => {
 }
 
 const canMoveRight = (): boolean => {
+    if (currentShapeYPosition < 0) return false;
     let y = 0;
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
@@ -230,6 +240,7 @@ const canMoveDown = (): boolean => {
         if (currentShape[x] == Type.BLOCK) {
             let nextX  = x % shapeSize + currentShapeXPosition;
             let nextY = currentShapeYPosition + y + 1;
+            if (currentShapeYPosition == 0 && board[nextY][nextX] == Type.BLOCK) gameOver();
             if (nextY >= gameHeight || board[nextY][nextX] == Type.BLOCK) {
                 return false;
             }
@@ -242,6 +253,7 @@ const canMoveDown = (): boolean => {
 }
 
 const canRotate = (shapeCopy: Type[]): boolean => {
+    if (currentShapeYPosition < 0) return false;
     let boardCopy = JSON.parse(JSON.stringify(board));
     let yy = 0;
     let check = currentShape.length;
@@ -330,9 +342,13 @@ const handleEvent = (e): void => {
     }
 }
 
+const gameOver = (): void => {
+    window.alert("Game Over, too bad :/");
+    initBoard();
+}
+
 const initBoard = (): void => {
     bindEventListener();
-    // create board matrix representing tetris fields
     for(let y = 0; y < gameHeight; ++y) {
         board[y] = [];
         for(let x = 0; x < gameWidth; ++x) {
@@ -340,6 +356,12 @@ const initBoard = (): void => {
             fillEmpty(x, y);
         }
     }
+    score = 0;
+    level = 0;
+    gameSpeed = 750;
+    currentShapeXPosition = 3;
+    currentShapeYPosition = -4;
+    clearTimeout(timer);
     updateScore();
     generateRandomShape();
     requestAnimationFrame(frame);
