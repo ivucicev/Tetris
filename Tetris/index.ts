@@ -119,7 +119,8 @@ const render = (): void => {
     let y = 0;
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
-            drawBlock(x % shapeSize + currentShapeXPosition, currentShapeYPosition + y);
+            if (currentShapeYPosition + y >= 0)
+                drawBlock(x % shapeSize + currentShapeXPosition, currentShapeYPosition + y);
         }
         if ((x % shapeSize) == (shapeSize - 1)) {
             y++;
@@ -223,6 +224,7 @@ const canMoveRight = (): boolean => {
 }
 
 const canMoveDown = (): boolean => {
+    if (currentShapeYPosition < 0) return true;
     let y = 0;
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
@@ -301,7 +303,7 @@ const generateRandomShape = (): void => {
     currentShape = shapes[randomShapeIndex];
     currentShapeColor = shapeColors[randomShapeIndex];
     currentShapeXPosition = 3;
-    currentShapeYPosition = 0;
+    currentShapeYPosition = -4;
 }
 
 const bindEventListener = () => document.onkeyup = handleEvent;
