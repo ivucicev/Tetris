@@ -31,13 +31,6 @@ enum Key {
     DOWN = 40,
     UP = 38,
     SPACE = 32,
-
-}
-
-enum Size {
-    BIG = 16,
-    MEDIUM = 9,
-    SMALL = 4
 }
 
 const shapes: Array<Type[]> = [
@@ -92,14 +85,7 @@ const shapes: Array<Type[]> = [
 ] 
 
 const shapeColors: string[] = [
-    "black",
-    "green",
-    "cyan",
-    "orange",
-    "red",
-    "blue",
-    "yellow",
-    "brown"
+    "black", "green", "cyan", "orange", "red", "blue", "yellow", "brown"
 ]
 
 const drawBlock = (x, y) => {
@@ -110,11 +96,6 @@ const drawBlock = (x, y) => {
 const fillEmpty = (x, y) => {
     ctx.fillStyle = shapeColors[0];
     draw(x, y);
-}
-
-const drawDebug = (x, y) => {
-    ctx.fillStyle = "white";
-    draw(x, y);  
 }
 
 const draw = (x, y) => {
@@ -143,7 +124,7 @@ const render = (): void => {
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
             drawBlock(x % currentShapeRow + currentShapeXOffset, currentShapePos + y);
-        } //else drawDebug(x % currentShapeRow + currentShapeXOffset, currentShapePos + y);
+        }
         if ((x % currentShapeRow) == (currentShapeRow - 1)) {
             y++;
         }
@@ -167,7 +148,6 @@ const frame = () => {
 
 const saveShapePositionToBoard = (): void => {
     let y = 0;
-    // draw current shape
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
             board[currentShapePos + y][x % currentShapeRow + currentShapeXOffset] = Type.BLOCK;
@@ -202,30 +182,12 @@ const collapseRows = (): void => {
 }
 
 const canMoveLeft = (): boolean => {
-
-    let hasBlock = false;
-    let check = 0;
-
-    while (!hasBlock) {
-        for (let x = check; x < currentShape.length; x = x + currentShapeRow) {
-            if (currentShape[x] == Type.BLOCK) hasBlock = true;
-        }
-        if (!hasBlock) {
-             check++;
-        }
-    }
-
-    // this means that block is outside game window
-    if (!(currentShapeXOffset + check)) return false;
-
-    // check if there is block next to every block in current shape
     let y = 0;
-
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
             let nextX  = x % currentShapeRow + currentShapeXOffset - 1;
             let nextY = currentShapePos + y;
-            if (board[nextY][nextX] == Type.BLOCK) {
+            if (nextX < 0 || board[nextY][nextX] == Type.BLOCK) {
                 return false;
             }
         } 
@@ -233,37 +195,16 @@ const canMoveLeft = (): boolean => {
             y++;
         }
     }
-
     return true;
-
 }
 
 const canMoveRight = (): boolean => {
-
-    let hasBlock = false;
-    let check = currentShape.length;
-
-    while (!hasBlock) {
-        for (let x = check - 1; x >= 0; x = x - currentShapeRow) {
-            if (currentShape[x] == Type.BLOCK) hasBlock = true;
-        }
-        if (!hasBlock) {
-             check--;
-        }
-    }
-
-    // this means that block is outside game window
-    if (currentShapeXOffset + (currentShapeRow - (currentShape.length - check)) >= gameWidth ) return false;
-
-    // check if there is block next to any block of current shape to the moveRight
-
     let y = 0;
-
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
             let nextX  = x % currentShapeRow + currentShapeXOffset + 1;
             let nextY = currentShapePos + y;
-            if (board[nextY][nextX] == Type.BLOCK) {
+            if (nextX >= gameWidth || board[nextY][nextX] == Type.BLOCK) {
                 return false;
             }
         } 
@@ -271,17 +212,11 @@ const canMoveRight = (): boolean => {
             y++;
         }
     }
-
     return true;
-
 }
 
 const canMoveDown = (): boolean => {
-    
-    // check if there is block next to any block of current shape to the moveRight
-
     let y = 0;
-
     for(let x = 0; x < currentShape.length; x++) {
         if (currentShape[x] == Type.BLOCK) {
             let nextX  = x % currentShapeRow + currentShapeXOffset;
@@ -294,7 +229,6 @@ const canMoveDown = (): boolean => {
             y++;
         }
     }
-
     return true;
 }
 
@@ -371,17 +305,7 @@ const generateRandomShape = (): void => {
     var shape = Math.floor(Math.random() * (shapes.length - 1) + 1);
     currentShape = shapes[shape];
     currentShapeColor = shapeColors[shape];
-    switch(currentShape.length) {
-        case Size.BIG:
-            currentShapeRow = 4;
-            break;
-        case Size.MEDIUM:
-            currentShapeRow = 3;
-            break;
-        case Size.SMALL:
-            currentShapeRow = 2;
-            break;
-    }
+    currentShapeRow = 4;
     currentShapeXOffset = 5 - Math.floor(currentShapeRow / 2);
     currentShapePos = 0;
 }
