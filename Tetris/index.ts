@@ -132,6 +132,7 @@ const render = (): void => {
 }
 
 const frame = () => {
+    clearTimeout(timer);
     render();
     if (canMoveDown()) {
         currentShapeYPosition++;
@@ -140,7 +141,6 @@ const frame = () => {
     }
     timer = setTimeout(() => { 
         requestAnimationFrame(frame);
-        clearTimeout(timer);
     }, gameSpeed);
 }
 
