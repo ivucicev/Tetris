@@ -89,8 +89,8 @@ const shapeColors: string[] = [
     "black", "green", "cyan", "orange", "red", "blue", "yellow", "brown"
 ]
 
-const drawBlock = (x, y) => {
-    ctx.fillStyle = currentShapeColor;    
+const drawBlock = (x, y, isDefault: boolean = false) => {
+    ctx.fillStyle = isDefault ? "powderblue" : currentShapeColor;    
     draw(x, y);
 }
 
@@ -111,7 +111,7 @@ const render = (): void => {
     for(let x = 0; x < gameWidth; ++x) {
         for(let y = 0; y < gameHeight; ++y) {
             if (board[y][x] == Type.BLOCK) {
-                drawBlock(x, y);
+                drawBlock(x, y, true);
             } else if (board[y][x] == Type.EMPTY) {
                 fillEmpty(x, y);
             }
